@@ -17,7 +17,7 @@ var dgram = require('dgram');
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 8888);
+app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -28,13 +28,6 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
-
-app.get('/', routes.index);
-app.get('/users', user.list);
 
 // UDP shenanigans
 // see http://nodejs.org/api/dgram.html for more deets
@@ -57,8 +50,16 @@ server.on("listening", function () {
 });
 
 server.bind(8888);
-// server listening 0.0.0.0:41234
+// server listening 0.0.0.0:8888
 
-// http.createServer(app).listen(app.get('port'), function(){
-//   console.log('Express server listening on port ' + app.get('port'));
-// });
+// development only
+if ('development' == app.get('env')) {
+  app.use(express.errorHandler());
+}
+
+app.get('/', routes.index);
+app.get('/users', user.list);
+
+http.createServer(app).listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
+});
